@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const morgan = require("morgan");
-const dotenv = require("dotenv");
-dotenv.config();
+const mongoose = require("mongoose");
 
 const app = express();
 app.use(cors());
@@ -11,6 +11,19 @@ app.use(express.static(path.join(__dirname, "../", "public")));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Database connection establish
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Database is connected");
+  })
+  .catch((e) => {
+    console.log(e);
+  });
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -39,7 +52,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
   console.log(`App is running on ${PORT}`);
 });
