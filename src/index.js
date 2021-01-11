@@ -4,11 +4,13 @@ const cors = require("cors");
 const path = require("path");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const { useMorgan } = require("./middlewares");
+const { logger } = require("./utils");
 
 const app = express();
 app.use(cors());
 app.use(express.static(path.join(__dirname, "../", "public")));
-app.use(morgan("dev"));
+useMorgan(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -19,10 +21,11 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("Database is connected");
+    logger.info("Database is connected");
   })
   .catch((e) => {
     console.log(e);
+    logger.error(e.message);
   });
 
 app.get("/", (req, res) => {
@@ -54,5 +57,5 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
-  console.log(`App is running on ${PORT}`);
+  logger.info(`App is running on ${PORT}`);
 });
